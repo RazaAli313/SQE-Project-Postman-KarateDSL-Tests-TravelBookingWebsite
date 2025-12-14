@@ -1,4 +1,4 @@
-# Travel-Booking-Website (Voyawander)
+# Travel-Booking-Website
 
 Voyawander is a modern and intuitive travel booking platform built using the MERN stack. The website allows users to browse destinations, book hotels, flights, and confirm their bookings securely. Special features like email verification via OTP and PDF generation of booking details enhance the overall experience.
 
