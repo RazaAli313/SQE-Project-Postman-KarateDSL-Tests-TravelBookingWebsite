@@ -77,8 +77,8 @@ Snowflakes adorn the interface during the Christmas season, bringing festive che
 
 #### Clone the Repository
 ```bash
-$ git clone https://github.com/yourusername/voyawander.git
-$ cd voyawander
+$ git clone https://github.com/RazaAli313/SQE-Project-Postman-KarateDSL-Tests-TravelBookingWebsite.git
+$ cd SQE-Project-Postman-KarateDSL-Tests-TravelBookingWebsite
 ```
 
 #### Frontend Setup
