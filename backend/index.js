@@ -18,7 +18,10 @@ app.use(express.json());
 
 // Configure CORS
 const corsOptions = {
-  origin: "https://dc-voyawander.vercel.app",
+  origin: ["https://dc-voyawander.vercel.app", "http://localhost:3000"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 
@@ -44,7 +47,7 @@ app.listen(PORT, async () => {
     await connectDB();
     console.log(`\n Server is running on port: http://localhost:${PORT}`);
     await connectRedis();
-    console.log(`\n Connected to Redis cloud!`);
+    console.log(`\n Connected to Redis!`);
   } catch (error) {
     console.error("Database connection failed:", error.message);
   }

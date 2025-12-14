@@ -15,6 +15,7 @@ Snowflakes adorn the interface during the Christmas season, bringing festive che
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Testing](#testing)
 - [Protected Routes](#protected-routes)
 - [Backend Security](#backend-security)
 - [Stripe Payment Integration](#stripe-payment-integration)
@@ -100,6 +101,56 @@ $ npm start
 
 ### Routes Structure
 Frontend routes are protected to ensure proper access based on user state, if user don't have proper access then it will redirect to the Not found page.
+
+---
+
+## Testing
+
+Comprehensive test documentation and automation scripts are available for API testing.
+
+### Quick Start
+
+1. **Setup Testing Environment**:
+   ```bash
+   # Install testing tools
+   npm install -g newman newman-reporter-html
+   
+   # Start Redis (required for OTP functionality)
+   brew services start redis
+   ```
+
+2. **Run Tests**:
+   ```bash
+   # Using test script (recommended)
+   ./tests/run-tests.sh
+   
+   # Or manually
+   newman run tests/postman/Travel_Booking_API.postman_collection.json \
+     --environment tests/postman/environment.json
+   ```
+
+### Test Documentation
+
+- **[TEST_DOCUMENTATION.md](TEST_DOCUMENTATION.md)**: Comprehensive test cases, execution reports, and automation scripts
+- **[tests/README.md](tests/README.md)**: Test directory structure and quick reference
+- **[tests/SETUP_GUIDE.md](tests/SETUP_GUIDE.md)**: Detailed setup instructions
+- **[tests/PERFORMANCE_TESTING.md](tests/PERFORMANCE_TESTING.md)**: Performance testing guide
+- **[tests/SECURITY_TESTING.md](tests/SECURITY_TESTING.md)**: Security testing guide
+
+### Testing Tools
+
+- **Postman/Newman**: API testing and automation
+- **Karate DSL**: BDD-style API testing
+- **CI/CD**: GitHub Actions workflow for automated testing
+
+### Test Coverage
+
+- ✅ Functional Testing (25+ test cases)
+- ✅ Security Testing (OWASP Top 10)
+- ✅ Performance Testing (Load, Stress, Endurance)
+- ✅ Integration Testing
+
+For detailed information, see [TEST_DOCUMENTATION.md](TEST_DOCUMENTATION.md).
 
 ---
 

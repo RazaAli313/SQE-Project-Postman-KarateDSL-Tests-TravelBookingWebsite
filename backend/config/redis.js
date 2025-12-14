@@ -1,13 +1,20 @@
 const { createClient } = require("redis");
 const { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT } = require("../constants");
 
-const redisClient = createClient({
-  password: REDIS_PASSWORD,
+// Configure Redis client - only include password if it's set (for local Redis, password is empty)
+const redisConfig = {
   socket: {
-    host: REDIS_HOST,
-    port: REDIS_PORT,
+    host: REDIS_HOST || 'localhost',
+    port: REDIS_PORT || 6379,
   },
-});
+};
+
+// Only add password if it's provided (for cloud Redis)
+if (REDIS_PASSWORD && REDIS_PASSWORD.trim() !== '') {
+  redisConfig.password = REDIS_PASSWORD;
+}
+
+const redisClient = createClient(redisConfig);
 
 const connectRedis = async () => {
   try {

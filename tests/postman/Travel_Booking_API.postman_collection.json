@@ -1,0 +1,568 @@
+{
+	"info": {
+		"_postman_id": "travel-booking-api-collection",
+		"name": "Travel Booking API",
+		"description": "Comprehensive API test collection for Travel Booking Website",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Register User - Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has userId\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('userId');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullname\": \"Test User\",\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"Test@123456\",\n    \"isVerified\": false\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/register"
+					}
+				},
+				{
+					"name": "Register User - Duplicate Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});",
+									"",
+									"pm.test(\"Error message is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include(\"Email already in use\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullname\": \"Test User\",\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"Test@123456\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/register"
+					}
+				},
+				{
+					"name": "Register User - Missing Fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullname\": \"Test User\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/register"
+					}
+				},
+				{
+					"name": "Login User - Valid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('token');",
+									"    pm.environment.set(\"authToken\", jsonData.data.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"Test@123456\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/login"
+					}
+				},
+				{
+					"name": "Login User - Invalid Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{testEmail}}\",\n    \"password\": \"WrongPassword\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/login"
+					}
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{testEmail}}\",\n    \"otp\": \"123456\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/verify-email"
+					}
+				},
+				{
+					"name": "Resend OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{testEmail}}\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/resend-otp"
+					}
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"oldPassword\": \"Test@123456\",\n    \"newPassword\": \"NewTest@123456\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/update-password"
+					}
+				},
+				{
+					"name": "Forget Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{testEmail}}\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/forget-password"
+					}
+				},
+				{
+					"name": "Check OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{testEmail}}\",\n    \"otp\": \"123456\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/check-otp"
+					}
+				}
+			]
+		},
+		{
+			"name": "Flight Management",
+			"item": [
+				{
+					"name": "Get All Flights",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 1s\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/flights"
+					}
+				},
+				{
+					"name": "Add Flights - Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flights\": [\n        {\n            \"airline\": \"Test Airlines\",\n            \"from\": \"New York\",\n            \"to\": \"London\",\n            \"departureDate\": \"2024-12-25\",\n            \"arrivalDate\": \"2024-12-25\",\n            \"price\": 500,\n            \"availableSeats\": 100\n        }\n    ]\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/flights"
+					}
+				}
+			]
+		},
+		{
+			"name": "Hotel Management",
+			"item": [
+				{
+					"name": "Get All Hotels",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/hotels"
+					}
+				},
+				{
+					"name": "Create Hotels - Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hotels\": [\n        {\n            \"name\": \"Test Hotel\",\n            \"location\": \"Paris\",\n            \"price\": 150,\n            \"rating\": 4.5,\n            \"amenities\": [\"WiFi\", \"Pool\"]\n        }\n    ]\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/hotels"
+					}
+				}
+			]
+		},
+		{
+			"name": "Place Management",
+			"item": [
+				{
+					"name": "Get All Places",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/places"
+					}
+				},
+				{
+					"name": "Add Places - Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"places\": [\n        {\n            \"name\": \"Paris\",\n            \"description\": \"City of Lights\",\n            \"image\": \"https://example.com/paris.jpg\"\n        }\n    ]\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/places"
+					}
+				}
+			]
+		},
+		{
+			"name": "Booking Management",
+			"item": [
+				{
+					"name": "Create Booking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"flight\",\n    \"flightId\": \"507f1f77bcf86cd799439011\",\n    \"passengers\": 2,\n    \"departureDate\": \"2024-12-25\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/booking/create"
+					}
+				},
+				{
+					"name": "Get Total Amount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"flight\",\n    \"flightId\": \"507f1f77bcf86cd799439011\",\n    \"passengers\": 2\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/booking/total-amount"
+					}
+				},
+				{
+					"name": "Save Booking Details",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookingId\": \"507f1f77bcf86cd799439011\",\n    \"userId\": \"507f1f77bcf86cd799439012\",\n    \"totalAmount\": 1000\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/booking/save-booking"
+					}
+				}
+			]
+		},
+		{
+			"name": "Payment Management",
+			"item": [
+				{
+					"name": "Create Payment Intent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has client secret\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('clientSecret');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 1000,\n    \"currency\": \"usd\",\n    \"bookingId\": \"507f1f77bcf86cd799439011\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/payments/create-payment-intent"
+					}
+				}
+			]
+		},
+		{
+			"name": "Message Management",
+			"item": [
+				{
+					"name": "Send Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"message\": \"This is a test message\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/messages"
+					}
+				},
+				{
+					"name": "Get All Messages - Admin",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": "{{baseUrl}}/api/v1/messages"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:3000",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

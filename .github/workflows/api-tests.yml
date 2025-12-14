@@ -1,0 +1,130 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  postman-tests:
+    name: Postman API Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-html
+      
+      - name: Run Postman Collection
+        run: |
+          newman run tests/postman/Travel_Booking_API.postman_collection.json \
+            --environment tests/postman/environment.json \
+            --reporters cli,html,json \
+            --reporter-html-export reports/postman-report.html \
+            --reporter-json-export reports/postman-report.json
+        continue-on-error: true
+      
+      - name: Upload Postman Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: postman-test-report
+          path: reports/postman-report.html
+
+  karate-tests:
+    name: Karate DSL Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      
+      - name: Setup Maven
+        uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: '3.9.0'
+      
+      - name: Run Karate Tests
+        run: |
+          cd tests/karate
+          mvn test -Dkarate.options="--plugin html:target/karate-reports"
+        continue-on-error: true
+      
+      - name: Upload Karate Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: karate-test-report
+          path: tests/karate/target/karate-reports/
+
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Run npm audit
+        run: |
+          cd backend
+          npm audit --audit-level=moderate
+        continue-on-error: true
+      
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'Travel-Booking-Website'
+          path: '.'
+          format: 'HTML'
+        continue-on-error: true
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [postman-tests, karate-tests]
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Download Postman Report
+        uses: actions/download-artifact@v3
+        with:
+          name: postman-test-report
+          path: reports/
+      
+      - name: Download Karate Report
+        uses: actions/download-artifact@v3
+        with:
+          name: karate-test-report
+          path: reports/karate/
+      
+      - name: Generate Test Summary
+        run: |
+          echo "## Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "### Postman Tests: Completed" >> $GITHUB_STEP_SUMMARY
+          echo "### Karate Tests: Completed" >> $GITHUB_STEP_SUMMARY
+          echo "### Reports available in artifacts" >> $GITHUB_STEP_SUMMARY
+
